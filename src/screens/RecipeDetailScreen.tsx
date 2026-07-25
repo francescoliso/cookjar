@@ -1,11 +1,12 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { mockRecipes } from '../data/mockRecipes';
 import { RecipeDetailParams, SearchStackParamList } from '../navigation/types';
 import { useSavedRecipes } from '../storage/SavedRecipesContext';
 import { colors, radius, spacing } from '../theme/theme';
+import { ingredientIcon } from '../utils/ingredientIcon';
 
 export function RecipeDetailScreen() {
   const route = useRoute<RouteProp<Record<string, RecipeDetailParams>, string>>();
@@ -13,21 +14,15 @@ export function RecipeDetailScreen() {
   const { isSaved, saveRecipe, removeRecipe, savedRecipes } = useSavedRecipes();
   const saveScale = useRef(new Animated.Value(1)).current;
 
+  // Prefer the canonical recipe (freshest image/data), fall back to the saved copy.
   const recipe =
-    savedRecipes.find((r) => r.id === route.params.recipeId) ??
-    mockRecipes.find((r) => r.id === route.params.recipeId);
+    mockRecipes.find((r) => r.id === route.params.recipeId) ??
+    savedRecipes.find((r) => r.id === route.params.recipeId);
 
-  if (!recipe) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.notFound}>Recipe not found.</Text>
-      </View>
-    );
-  }
-
-  const saved = isSaved(recipe.id);
+  const saved = recipe ? isSaved(recipe.id) : false;
 
   const handleToggleSave = () => {
+    if (!recipe) return;
     saved ? removeRecipe(recipe.id) : saveRecipe(recipe);
     saveScale.setValue(0.85);
     Animated.spring(saveScale, {
@@ -38,9 +33,41 @@ export function RecipeDetailScreen() {
     }).start();
   };
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        recipe ? (
+          <Pressable onPress={handleToggleSave} hitSlop={8}>
+            <Animated.View
+              style={[
+                styles.savePill,
+                saved && styles.savePillActive,
+                { transform: [{ scale: saveScale }] },
+              ]}
+            >
+              <Text style={[styles.savePillText, saved && styles.savePillTextActive]}>
+                {saved ? 'Saved ✓' : 'Save'}
+              </Text>
+            </Animated.View>
+          </Pressable>
+        ) : null,
+    });
+  }, [navigation, recipe, saved]);
+
+  if (!recipe) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.notFound}>Recipe not found.</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Image source={recipe.image} style={styles.image} />
+      <View style={styles.imageWrap}>
+        <Image source={recipe.image} style={styles.image} />
+        <View style={styles.scrim} />
+      </View>
       <View style={styles.body}>
         <Text style={styles.title}>{recipe.title}</Text>
         <Text style={styles.source}>{recipe.sourceName}</Text>
@@ -54,24 +81,12 @@ export function RecipeDetailScreen() {
           </View>
         </View>
 
-        <Pressable onPress={handleToggleSave}>
-          <Animated.View
-            style={[
-              styles.saveButton,
-              saved && styles.saveButtonActive,
-              { transform: [{ scale: saveScale }] },
-            ]}
-          >
-            <Text style={[styles.saveButtonText, saved && styles.saveButtonTextActive]}>
-              {saved ? 'Saved ✓' : 'Save recipe'}
-            </Text>
-          </Animated.View>
-        </Pressable>
-
         <Text style={styles.sectionTitle}>Ingredients</Text>
         {recipe.ingredients.map((ingredient, index) => (
           <View key={index} style={styles.listRow}>
-            <View style={styles.bullet} />
+            <View style={styles.ingredientIcon}>
+              <Text style={styles.ingredientIconText}>{ingredientIcon(ingredient)}</Text>
+            </View>
             <Text style={styles.listText}>{ingredient}</Text>
           </View>
         ))}
@@ -108,10 +123,22 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 16,
   },
+  imageWrap: {
+    width: '100%',
+    height: 240,
+  },
   image: {
     width: '100%',
     height: 240,
     backgroundColor: colors.primarySoft,
+  },
+  scrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.scrim,
   },
   body: {
     padding: spacing.md,
@@ -142,22 +169,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 13,
   },
-  saveButton: {
-    marginTop: spacing.lg,
+  savePill: {
     backgroundColor: colors.primary,
-    borderRadius: radius.md,
-    paddingVertical: 14,
-    alignItems: 'center',
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 7,
   },
-  saveButtonActive: {
+  savePillActive: {
     backgroundColor: colors.accent,
   },
-  saveButtonText: {
+  savePillText: {
     color: '#FFFFFF',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 14,
   },
-  saveButtonTextActive: {
+  savePillTextActive: {
     color: '#FFFFFF',
   },
   sectionTitle: {
@@ -169,16 +195,20 @@ const styles = StyleSheet.create({
   },
   listRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
-  bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.primary,
-    marginTop: 8,
+  ingredientIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.sm,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ingredientIconText: {
+    fontSize: 16,
   },
   stepRow: {
     flexDirection: 'row',

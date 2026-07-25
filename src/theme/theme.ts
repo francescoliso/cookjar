@@ -1,12 +1,14 @@
 export const colors = {
-  background: '#FBF9F6',
-  surface: '#FFFFFF',
-  border: '#EDE7DF',
-  text: '#241C15',
-  textMuted: '#8A7F72',
-  primary: '#D96C3F',
-  primarySoft: '#FBE4D8',
+  background: '#EEE1CE',
+  surface: '#F9F0E3',
+  border: '#E0D0B8',
+  text: '#2A211A',
+  textMuted: '#8C7B65',
+  primary: '#C6552E',
+  primarySoft: '#F1D9C7',
   accent: '#4C7A5C',
+  // Warm translucent overlay laid over photos to mute their vividness.
+  scrim: 'rgba(238, 225, 206, 0.32)',
 };
 
 export const spacing = {

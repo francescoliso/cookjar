@@ -23,7 +23,10 @@ export function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () =>
         onPressIn={() => animateTo(0.96)}
         onPressOut={() => animateTo(1)}
       >
-        <Image source={recipe.image} style={styles.image} />
+        <View style={styles.imageWrap}>
+          <Image source={recipe.image} style={styles.image} />
+          <View style={styles.scrim} />
+        </View>
         <View style={styles.body}>
           <Text style={styles.title} numberOfLines={1}>
             {recipe.title}
@@ -46,10 +49,22 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: spacing.md,
   },
+  imageWrap: {
+    width: '100%',
+    height: 140,
+  },
   image: {
     width: '100%',
     height: 140,
     backgroundColor: colors.primarySoft,
+  },
+  scrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.scrim,
   },
   body: {
     padding: spacing.md,

@@ -19,7 +19,8 @@ const screenOptions = {
   headerStyle: { backgroundColor: colors.surface },
   headerTintColor: colors.text,
   headerShadowVisible: false,
-  headerTitle: 'Recipe',
+  headerTitle: '',
+  headerBackButtonDisplayMode: 'minimal' as const,
 };
 
 function SearchStackNavigator() {
