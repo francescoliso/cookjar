@@ -44,10 +44,7 @@ export function SearchScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <Text style={styles.header} numberOfLines={1} adjustsFontSizeToFit>
-        <Text style={styles.headerLead}>Ready to cook? </Text>
-        Find a recipe
-      </Text>
+      <Text style={styles.header}>Ready to cook?</Text>
       <View style={styles.searchRow}>
         <TextInput
           style={styles.input}
@@ -186,16 +183,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   header: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: '800',
-    letterSpacing: -0.6,
+    letterSpacing: -0.8,
     color: colors.headerText,
     marginTop: spacing.lg,
     marginBottom: spacing.lg,
-  },
-  headerLead: {
-    fontWeight: '400',
-    color: colors.headerText,
   },
   searchRow: {
     flexDirection: 'row',

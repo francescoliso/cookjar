@@ -41,9 +41,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   header: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: '800',
-    letterSpacing: -0.6,
+    letterSpacing: -0.8,
     color: colors.headerText,
     marginTop: spacing.xl,
     marginBottom: spacing.lg,
