@@ -2,6 +2,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlatList, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RecipeCard } from '../components/RecipeCard';
+import { mockRecipes } from '../data/mockRecipes';
 import { SavedStackParamList } from '../navigation/types';
 import { useSavedRecipes } from '../storage/SavedRecipesContext';
 import { colors, spacing } from '../theme/theme';
@@ -18,12 +19,16 @@ export function SavedScreen({ navigation }: Props) {
         data={savedRecipes}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => (
-          <RecipeCard
-            recipe={item}
-            onPress={() => navigation.navigate('RecipeDetail', { recipeId: item.id })}
-          />
-        )}
+        renderItem={({ item }) => {
+          // Prefer the canonical recipe so the freshest image/data is shown.
+          const recipe = mockRecipes.find((r) => r.id === item.id) ?? item;
+          return (
+            <RecipeCard
+              recipe={recipe}
+              onPress={() => navigation.navigate('RecipeDetail', { recipeId: item.id })}
+            />
+          );
+        }}
         ListEmptyComponent={
           <Text style={styles.empty}>
             Recipes you save will show up here. Find one you like in Search and tap "Save".
@@ -43,7 +48,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text,
+    color: colors.headerText,
     marginTop: spacing.sm,
     marginBottom: spacing.md,
   },

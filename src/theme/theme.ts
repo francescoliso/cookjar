@@ -1,14 +1,16 @@
 export const colors = {
-  background: '#EEE1CE',
-  surface: '#F9F0E3',
-  border: '#E0D0B8',
-  text: '#2A211A',
-  textMuted: '#8C7B65',
-  primary: '#C6552E',
-  primarySoft: '#F1D9C7',
-  accent: '#4C7A5C',
+  background: '#211A17',
+  surface: '#2E2420',
+  border: '#3D302A',
+  text: '#F5EDE4',
+  // Title/text that sits directly on `background` (screen headers).
+  headerText: '#F5EDE4',
+  textMuted: '#A99A88',
+  primary: '#E8905A',
+  primarySoft: 'rgba(232,144,90,0.20)',
+  accent: '#7FB08A',
   // Warm translucent overlay laid over photos to mute their vividness.
-  scrim: 'rgba(238, 225, 206, 0.32)',
+  scrim: 'rgba(33, 26, 23, 0.30)',
 };
 
 export const spacing = {

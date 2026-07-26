@@ -6,7 +6,6 @@ import { mockRecipes } from '../data/mockRecipes';
 import { RecipeDetailParams, SearchStackParamList } from '../navigation/types';
 import { useSavedRecipes } from '../storage/SavedRecipesContext';
 import { colors, radius, spacing } from '../theme/theme';
-import { ingredientIcon } from '../utils/ingredientIcon';
 
 export function RecipeDetailScreen() {
   const route = useRoute<RouteProp<Record<string, RecipeDetailParams>, string>>();
@@ -84,9 +83,7 @@ export function RecipeDetailScreen() {
         <Text style={styles.sectionTitle}>Ingredients</Text>
         {recipe.ingredients.map((ingredient, index) => (
           <View key={index} style={styles.listRow}>
-            <View style={styles.ingredientIcon}>
-              <Text style={styles.ingredientIconText}>{ingredientIcon(ingredient)}</Text>
-            </View>
+            <View style={styles.bullet} />
             <Text style={styles.listText}>{ingredient}</Text>
           </View>
         ))}
@@ -195,20 +192,16 @@ const styles = StyleSheet.create({
   },
   listRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.sm,
     marginBottom: spacing.sm,
   },
-  ingredientIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: radius.sm,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ingredientIconText: {
-    fontSize: 16,
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.primary,
+    marginTop: 8,
   },
   stepRow: {
     flexDirection: 'row',

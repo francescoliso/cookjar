@@ -84,7 +84,7 @@ export default function App() {
             />
           </Tab.Navigator>
         </NavigationContainer>
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
       </SavedRecipesProvider>
     </SafeAreaProvider>
   );

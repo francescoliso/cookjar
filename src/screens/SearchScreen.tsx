@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text,
+    color: colors.headerText,
     marginTop: spacing.sm,
     marginBottom: spacing.md,
   },
