@@ -3,6 +3,13 @@ import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native
 import { colors, radius, spacing } from '../theme/theme';
 import { Recipe } from '../types/recipe';
 
+export function recipeMeta(recipe: Recipe): string {
+  const parts: string[] = [];
+  if (recipe.readyInMinutes > 0) parts.push(`${recipe.readyInMinutes} min`);
+  if (recipe.servings > 0) parts.push(`${recipe.servings} servings`);
+  return parts.join(' · ');
+}
+
 export function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () => void }) {
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -24,16 +31,22 @@ export function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () =>
         onPressOut={() => animateTo(1)}
       >
         <View style={styles.imageWrap}>
-          <Image source={recipe.image} style={styles.image} />
-          <View style={styles.scrim} />
+          {recipe.image ? (
+            <>
+              <Image source={{ uri: recipe.image }} style={styles.image} />
+              <View style={styles.scrim} />
+            </>
+          ) : (
+            <View style={[styles.image, styles.placeholder]}>
+              <Text style={styles.placeholderEmoji}>🍽️</Text>
+            </View>
+          )}
         </View>
         <View style={styles.body}>
           <Text style={styles.title} numberOfLines={1}>
             {recipe.title}
           </Text>
-          <Text style={styles.meta}>
-            {recipe.readyInMinutes} min · {recipe.servings} servings
-          </Text>
+          {recipeMeta(recipe) ? <Text style={styles.meta}>{recipeMeta(recipe)}</Text> : null}
         </View>
       </Pressable>
     </Animated.View>
@@ -57,6 +70,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 140,
     backgroundColor: colors.primarySoft,
+  },
+  placeholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderEmoji: {
+    fontSize: 40,
+    opacity: 0.5,
   },
   scrim: {
     position: 'absolute',

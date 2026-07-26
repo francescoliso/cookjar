@@ -1,36 +1,64 @@
 # CookJar
 
-A simple, modern recipe app: search for recipes, view them in a clean format (ingredients, instructions, time, servings), and save the ones you've cooked so you can find them again.
+A simple, modern recipe app: search real recipes from the web, view them in a
+clean format (ingredients, instructions, time, servings), and save the ones
+you've cooked so you can find them again.
 
-## Status
+## How it works
 
-This is an early mock version. Recipe search currently runs against a small local dataset with the same shape real scraped data will have (title, image, ingredients, instructions, time, servings) — the goal is to swap in live recipe search without reworking the UI. Dish photos are real, bundled with the app.
+The app talks to a small serverless backend (`server/`) that proxies and
+normalizes the [Spoonacular](https://spoonacular.com/food-api) recipe API. The
+API key lives only on the server — the app just knows the backend URL. If no key
+is configured, the backend serves built-in fixture recipes so everything works
+in local dev without a key.
+
+```
+App (Expo) ──► Backend (Vercel Functions) ──► Spoonacular
+```
 
 ## Features
 
-- **Search** — look up recipes by dish name or ingredient.
-- **Recipe detail** — ingredients, step-by-step instructions, prep time, and servings in a clean, readable layout.
-- **Saved recipes** — save any recipe you've cooked; it persists locally on your device.
-- **Considered design** — warm, food-forward palette, an illustrated app icon, and micro-animations (cards spring on press, the save button pops on toggle).
-
-## Roadmap
-
-- Replace the local mock dataset with live recipe search (web search + scraping recipe sites' structured data).
-- Recipe notes/ratings on saved recipes.
-- Shareable recipe links.
+- **Search** — live recipe search by dish name or ingredient, with loading,
+  empty, and error states.
+- **Recipe detail** — image, ingredients, step-by-step instructions, prep time,
+  servings, and a link to the original source.
+- **Saved recipes** — save any recipe; it persists locally (AsyncStorage) and is
+  available offline.
+- **Considered design** — warm "moody dark" palette, an illustrated app icon,
+  photo scrims, and micro-animations (cards spring on press, save button pops).
 
 ## Tech stack
 
-- [Expo](https://docs.expo.dev/) / React Native
-- TypeScript
+- [Expo](https://docs.expo.dev/) / React Native + TypeScript
 - React Navigation (bottom tabs + native stack)
+- [TanStack Query](https://tanstack.com/query) for data fetching/caching
 - AsyncStorage for local persistence
+- Backend: Vercel Functions (see [`server/README.md`](server/README.md))
 
 ## Getting started
 
+**1. Backend** (serves fixtures without a key):
+
 ```bash
+cd server
 npm install
-npx expo start
+npm run dev:local        # http://localhost:3000
 ```
 
-Press `i` for the iOS Simulator, `a` for Android, or `w` for web. See [Expo's setup docs](https://docs.expo.dev/get-started/set-up-your-environment/) for running on a physical device.
+**2. App:**
+
+```bash
+npm install
+npx expo start --dev-client
+```
+
+Press `i` for the iOS Simulator. The Simulator reaches the local backend at
+`http://localhost:3000` by default (see `src/config.ts`). For real recipes, add a
+Spoonacular key to `server/.env` and deploy the backend, then set
+`expo.extra.apiBaseUrl` in `app.json` to the deployment URL.
+
+## Roadmap
+
+- Accounts + cloud sync of saved recipes.
+- Cooking features (servings scaler, ingredient check-off, cook mode).
+- Recipe notes/ratings and a "cooked" history.

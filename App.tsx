@@ -1,6 +1,7 @@
 import { NavigationContainer, Theme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -59,11 +60,18 @@ const navigationTheme: Theme = {
   },
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, staleTime: 5 * 60 * 1000 },
+  },
+});
+
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SavedRecipesProvider>
-        <NavigationContainer theme={navigationTheme}>
+      <QueryClientProvider client={queryClient}>
+        <SavedRecipesProvider>
+          <NavigationContainer theme={navigationTheme}>
           <Tab.Navigator
             screenOptions={{
               headerShown: false,
@@ -82,10 +90,11 @@ export default function App() {
               component={SavedStackNavigator}
               options={{ tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📖</Text> }}
             />
-          </Tab.Navigator>
-        </NavigationContainer>
-        <StatusBar style="light" />
-      </SavedRecipesProvider>
+            </Tab.Navigator>
+          </NavigationContainer>
+          <StatusBar style="light" />
+        </SavedRecipesProvider>
+      </QueryClientProvider>
     </SafeAreaProvider>
   );
 }

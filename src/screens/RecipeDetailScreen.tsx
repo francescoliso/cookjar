@@ -1,8 +1,19 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 import { useLayoutEffect, useRef } from 'react';
-import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { mockRecipes } from '../data/mockRecipes';
+import {
+  ActivityIndicator,
+  Animated,
+  Image,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { getRecipe } from '../api/client';
 import { RecipeDetailParams, SearchStackParamList } from '../navigation/types';
 import { useSavedRecipes } from '../storage/SavedRecipesContext';
 import { colors, radius, spacing } from '../theme/theme';
@@ -13,12 +24,23 @@ export function RecipeDetailScreen() {
   const { isSaved, saveRecipe, removeRecipe, savedRecipes } = useSavedRecipes();
   const saveScale = useRef(new Animated.Value(1)).current;
 
-  // Prefer the canonical recipe (freshest image/data), fall back to the saved copy.
-  const recipe =
-    mockRecipes.find((r) => r.id === route.params.recipeId) ??
-    savedRecipes.find((r) => r.id === route.params.recipeId);
+  const recipeId = route.params.recipeId;
+  // A saved recipe is the offline source of truth; otherwise fetch by id.
+  const savedCopy = savedRecipes.find((r) => r.id === recipeId);
+  const {
+    data: fetched,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['recipe', recipeId],
+    queryFn: ({ signal }) => getRecipe(recipeId, signal),
+    enabled: !savedCopy,
+  });
 
-  const saved = recipe ? isSaved(recipe.id) : false;
+  const recipe = savedCopy ?? fetched;
+  const saved = isSaved(recipeId);
 
   const handleToggleSave = () => {
     if (!recipe) return;
@@ -53,6 +75,27 @@ export function RecipeDetailScreen() {
     });
   }, [navigation, recipe, saved]);
 
+  if (!recipe && isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!recipe && isError) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.notFound}>
+          {error instanceof Error ? error.message : 'Could not load this recipe.'}
+        </Text>
+        <Pressable style={styles.retry} onPress={() => refetch()}>
+          <Text style={styles.retryText}>Try again</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   if (!recipe) {
     return (
       <View style={styles.center}>
@@ -61,42 +104,80 @@ export function RecipeDetailScreen() {
     );
   }
 
+  const openSource = () => {
+    if (recipe.sourceUrl) Linking.openURL(recipe.sourceUrl);
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.imageWrap}>
-        <Image source={recipe.image} style={styles.image} />
-        <View style={styles.scrim} />
+        {recipe.image ? (
+          <>
+            <Image source={{ uri: recipe.image }} style={styles.image} />
+            <View style={styles.scrim} />
+          </>
+        ) : (
+          <View style={[styles.image, styles.placeholder]}>
+            <Text style={styles.placeholderEmoji}>🍽️</Text>
+          </View>
+        )}
       </View>
       <View style={styles.body}>
         <Text style={styles.title}>{recipe.title}</Text>
-        <Text style={styles.source}>{recipe.sourceName}</Text>
+        <Pressable onPress={openSource} disabled={!recipe.sourceUrl}>
+          <Text style={[styles.source, recipe.sourceUrl && styles.sourceLink]}>
+            {recipe.sourceName}
+          </Text>
+        </Pressable>
 
-        <View style={styles.metaRow}>
-          <View style={styles.metaPill}>
-            <Text style={styles.metaPillText}>{recipe.readyInMinutes} min</Text>
+        {(recipe.readyInMinutes > 0 || recipe.servings > 0) && (
+          <View style={styles.metaRow}>
+            {recipe.readyInMinutes > 0 && (
+              <View style={styles.metaPill}>
+                <Text style={styles.metaPillText}>{recipe.readyInMinutes} min</Text>
+              </View>
+            )}
+            {recipe.servings > 0 && (
+              <View style={styles.metaPill}>
+                <Text style={styles.metaPillText}>{recipe.servings} servings</Text>
+              </View>
+            )}
           </View>
-          <View style={styles.metaPill}>
-            <Text style={styles.metaPillText}>{recipe.servings} servings</Text>
-          </View>
-        </View>
+        )}
 
-        <Text style={styles.sectionTitle}>Ingredients</Text>
-        {recipe.ingredients.map((ingredient, index) => (
-          <View key={index} style={styles.listRow}>
-            <View style={styles.bullet} />
-            <Text style={styles.listText}>{ingredient}</Text>
-          </View>
-        ))}
+        {recipe.ingredients.length > 0 && (
+          <>
+            <Text style={styles.sectionTitle}>Ingredients</Text>
+            {recipe.ingredients.map((ingredient, index) => (
+              <View key={index} style={styles.listRow}>
+                <View style={styles.bullet} />
+                <Text style={styles.listText}>{ingredient}</Text>
+              </View>
+            ))}
+          </>
+        )}
 
-        <Text style={styles.sectionTitle}>Instructions</Text>
-        {recipe.instructions.map((step, index) => (
-          <View key={index} style={styles.stepRow}>
-            <View style={styles.stepNumber}>
-              <Text style={styles.stepNumberText}>{index + 1}</Text>
-            </View>
-            <Text style={styles.listText}>{step}</Text>
-          </View>
-        ))}
+        {recipe.instructions.length > 0 ? (
+          <>
+            <Text style={styles.sectionTitle}>Instructions</Text>
+            {recipe.instructions.map((step, index) => (
+              <View key={index} style={styles.stepRow}>
+                <View style={styles.stepNumber}>
+                  <Text style={styles.stepNumberText}>{index + 1}</Text>
+                </View>
+                <Text style={styles.listText}>{step}</Text>
+              </View>
+            ))}
+          </>
+        ) : (
+          <Text style={styles.noSteps}>Full step-by-step instructions are on the source site.</Text>
+        )}
+
+        {recipe.sourceUrl ? (
+          <Pressable style={styles.sourceButton} onPress={openSource}>
+            <Text style={styles.sourceButtonText}>View full recipe →</Text>
+          </Pressable>
+        ) : null}
       </View>
     </ScrollView>
   );
@@ -119,6 +200,20 @@ const styles = StyleSheet.create({
   notFound: {
     color: colors.textMuted,
     fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  retry: {
+    marginTop: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: spacing.lg,
+  },
+  retryText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 15,
   },
   imageWrap: {
     width: '100%',
@@ -128,6 +223,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 240,
     backgroundColor: colors.primarySoft,
+  },
+  placeholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderEmoji: {
+    fontSize: 56,
+    opacity: 0.5,
   },
   scrim: {
     position: 'absolute',
@@ -149,6 +252,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textMuted,
     marginTop: spacing.xs,
+  },
+  sourceLink: {
+    color: colors.primary,
+    textDecorationLine: 'underline',
   },
   metaRow: {
     flexDirection: 'row',
@@ -227,5 +334,24 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 21,
     color: colors.text,
+  },
+  noSteps: {
+    marginTop: spacing.lg,
+    fontSize: 15,
+    lineHeight: 21,
+    color: colors.textMuted,
+  },
+  sourceButton: {
+    marginTop: spacing.xl,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  sourceButtonText: {
+    color: colors.primary,
+    fontWeight: '700',
+    fontSize: 15,
   },
 });

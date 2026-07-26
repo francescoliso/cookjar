@@ -1,12 +1,14 @@
-import { Recipe } from '../types/recipe';
+import { Recipe } from './types';
 
-export const mockRecipes: Recipe[] = [
+// Built-in recipes served when SPOONACULAR_API_KEY is not set, so the app works
+// end-to-end in local dev without a key. Images are stable remote URLs.
+export const fixtureRecipes: Recipe[] = [
   {
-    id: 'spaghetti-carbonara',
+    id: 'fx-spaghetti-carbonara',
     title: 'Spaghetti Carbonara',
-    image: require('../../assets/recipes/carbonara.jpg'),
-    sourceUrl: 'https://example.com/recipes/spaghetti-carbonara',
-    sourceName: 'Trattoria Classics',
+    image: 'https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg',
+    sourceUrl: 'https://www.themealdb.com/meal/52982',
+    sourceName: 'TheMealDB',
     readyInMinutes: 25,
     servings: 4,
     ingredients: [
@@ -22,17 +24,17 @@ export const mockRecipes: Recipe[] = [
     instructions: [
       'Bring a large pot of salted water to a boil and cook spaghetti until al dente.',
       'While pasta cooks, fry the pancetta in a large pan over medium heat until crisp.',
-      'Whisk egg yolks, whole egg, Pecorino, and Parmesan together in a bowl with black pepper.',
+      'Whisk egg yolks, whole egg, Pecorino, and Parmesan together with black pepper.',
       'Reserve 1 cup of pasta water, then drain the pasta.',
-      'Off the heat, toss the hot pasta with the pancetta, then quickly stir in the egg mixture, adding splashes of pasta water until glossy and creamy.',
-      'Serve immediately with extra cheese and pepper on top.',
+      'Off the heat, toss the hot pasta with the pancetta, then quickly stir in the egg mixture, adding pasta water until creamy.',
+      'Serve immediately with extra cheese and pepper.',
     ],
   },
   {
-    id: 'classic-guacamole',
+    id: 'fx-classic-guacamole',
     title: 'Classic Guacamole',
-    image: require('../../assets/recipes/guacamole.jpg'),
-    sourceUrl: 'https://example.com/recipes/classic-guacamole',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Guacamole_IMGP1271.jpg/960px-Guacamole_IMGP1271.jpg',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Guacamole',
     sourceName: 'Fresh & Simple',
     readyInMinutes: 15,
     servings: 6,
@@ -47,17 +49,17 @@ export const mockRecipes: Recipe[] = [
     ],
     instructions: [
       'Halve the avocados, remove the pits, and scoop the flesh into a bowl.',
-      'Mash the avocado to your desired consistency with a fork.',
+      'Mash to your desired consistency with a fork.',
       'Fold in onion, tomatoes, jalapeño, and cilantro.',
       'Stir in lime juice and season with salt.',
-      'Taste and adjust seasoning, then serve with tortilla chips.',
+      'Taste, adjust, and serve with tortilla chips.',
     ],
   },
   {
-    id: 'chicken-tikka-masala',
+    id: 'fx-chicken-tikka-masala',
     title: 'Chicken Tikka Masala',
-    image: require('../../assets/recipes/tikka-masala.jpg'),
-    sourceUrl: 'https://example.com/recipes/chicken-tikka-masala',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Chicken_tikka_masala.jpg/960px-Chicken_tikka_masala.jpg',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Chicken_tikka_masala',
     sourceName: 'Spice Route Kitchen',
     readyInMinutes: 50,
     servings: 4,
@@ -85,11 +87,11 @@ export const mockRecipes: Recipe[] = [
     ],
   },
   {
-    id: 'margherita-pizza',
+    id: 'fx-margherita-pizza',
     title: 'Margherita Pizza',
-    image: require('../../assets/recipes/margherita.jpg'),
-    sourceUrl: 'https://example.com/recipes/margherita-pizza',
-    sourceName: 'Trattoria Classics',
+    image: 'https://www.themealdb.com/images/media/meals/x0lk931587671540.jpg',
+    sourceUrl: 'https://www.themealdb.com/meal/53014',
+    sourceName: 'TheMealDB',
     readyInMinutes: 40,
     servings: 2,
     ingredients: [
@@ -101,19 +103,19 @@ export const mockRecipes: Recipe[] = [
       'Salt, to taste',
     ],
     instructions: [
-      'Preheat oven (with pizza stone if available) to its highest setting.',
+      'Preheat the oven (with a pizza stone if available) to its highest setting.',
       'Stretch the dough into a round on a floured surface.',
-      'Spread tomato sauce evenly, leaving a border for the crust.',
+      'Spread tomato sauce, leaving a border for the crust.',
       'Scatter torn mozzarella over the sauce.',
-      'Bake until the crust is golden and cheese is bubbling, 8-12 minutes.',
-      'Top with fresh basil, a drizzle of olive oil, and a pinch of salt before serving.',
+      'Bake until the crust is golden and cheese is bubbling, 8–12 minutes.',
+      'Top with basil, a drizzle of olive oil, and a pinch of salt.',
     ],
   },
   {
-    id: 'beef-tacos',
+    id: 'fx-beef-tacos',
     title: 'Beef Tacos',
-    image: require('../../assets/recipes/beef-tacos.jpg'),
-    sourceUrl: 'https://example.com/recipes/beef-tacos',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Tacos_al_pastor.jpg/960px-Tacos_al_pastor.jpg',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Taco',
     sourceName: 'Fresh & Simple',
     readyInMinutes: 30,
     servings: 4,
@@ -129,16 +131,16 @@ export const mockRecipes: Recipe[] = [
     instructions: [
       'Brown the ground beef in a skillet over medium-high heat, breaking it up as it cooks.',
       'Drain excess fat, then stir in taco seasoning and a splash of water; simmer 5 minutes.',
-      'Warm the tortillas in a dry pan or over an open flame.',
+      'Warm the tortillas in a dry pan or over a flame.',
       'Fill each tortilla with beef, lettuce, cheese, and tomato.',
-      'Top with sour cream and salsa and serve immediately.',
+      'Top with sour cream and salsa and serve.',
     ],
   },
   {
-    id: 'greek-salad',
+    id: 'fx-greek-salad',
     title: 'Greek Salad',
-    image: require('../../assets/recipes/greek-salad.jpg'),
-    sourceUrl: 'https://example.com/recipes/greek-salad',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Horiatiki_salad.jpg/960px-Horiatiki_salad.jpg',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Greek_salad',
     sourceName: 'Mediterranean Table',
     readyInMinutes: 15,
     servings: 4,
@@ -154,17 +156,17 @@ export const mockRecipes: Recipe[] = [
       '1 tsp dried oregano',
     ],
     instructions: [
-      'Combine tomatoes, cucumber, bell pepper, and onion in a large bowl.',
+      'Combine tomatoes, cucumber, bell pepper, and onion in a bowl.',
       'Add olives and top with feta.',
       'Whisk olive oil, vinegar, and oregano, then drizzle over the salad.',
-      'Season with salt and pepper and serve immediately.',
+      'Season with salt and pepper and serve.',
     ],
   },
   {
-    id: 'banana-pancakes',
+    id: 'fx-banana-pancakes',
     title: 'Banana Pancakes',
-    image: require('../../assets/recipes/pancakes.jpg'),
-    sourceUrl: 'https://example.com/recipes/banana-pancakes',
+    image: 'https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg',
+    sourceUrl: 'https://www.themealdb.com/meal/52855',
     sourceName: 'Weekend Brunch Co.',
     readyInMinutes: 20,
     servings: 3,
@@ -180,18 +182,18 @@ export const mockRecipes: Recipe[] = [
       'Maple syrup, to serve',
     ],
     instructions: [
-      'Whisk together flour, sugar, baking powder, and salt in a bowl.',
+      'Whisk flour, sugar, baking powder, and salt together.',
       'In another bowl, mix milk, egg, mashed banana, and melted butter.',
-      'Combine wet and dry ingredients until just mixed (a few lumps are fine).',
-      'Cook 1/4-cup portions on a greased griddle over medium heat until bubbles form, then flip.',
-      'Cook until golden on both sides and serve warm with maple syrup.',
+      'Combine wet and dry until just mixed (a few lumps are fine).',
+      'Cook 1/4-cup portions on a greased griddle until bubbles form, then flip.',
+      'Cook until golden and serve warm with maple syrup.',
     ],
   },
   {
-    id: 'thai-green-curry',
+    id: 'fx-thai-green-curry',
     title: 'Thai Green Curry',
-    image: require('../../assets/recipes/thai-green-curry.jpg'),
-    sourceUrl: 'https://example.com/recipes/thai-green-curry',
+    image: 'https://www.themealdb.com/images/media/meals/sstssx1487349585.jpg',
+    sourceUrl: 'https://www.themealdb.com/meal/52921',
     sourceName: 'Spice Route Kitchen',
     readyInMinutes: 35,
     servings: 4,
@@ -208,13 +210,26 @@ export const mockRecipes: Recipe[] = [
       'Cooked jasmine rice, to serve',
     ],
     instructions: [
-      'Simmer a spoonful of the thick coconut cream in a wok until fragrant oil separates.',
+      'Simmer a spoonful of thick coconut cream until fragrant oil separates.',
       'Stir in curry paste and fry until aromatic.',
-      'Add chicken and cook until sealed on all sides.',
+      'Add chicken and cook until sealed.',
       'Pour in remaining coconut milk, then add eggplant, bell pepper, and lime leaves.',
       'Simmer until vegetables and chicken are cooked through.',
-      'Season with fish sauce and sugar, then finish with Thai basil.',
-      'Serve hot over jasmine rice.',
+      'Season with fish sauce and sugar, finish with Thai basil, and serve over rice.',
     ],
   },
 ];
+
+export function searchFixtures(query: string): Recipe[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return fixtureRecipes;
+  return fixtureRecipes.filter(
+    (r) =>
+      r.title.toLowerCase().includes(q) ||
+      r.ingredients.some((i) => i.toLowerCase().includes(q))
+  );
+}
+
+export function getFixture(id: string): Recipe | undefined {
+  return fixtureRecipes.find((r) => r.id === id);
+}

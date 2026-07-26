@@ -1,3 +1,5 @@
+// The normalized recipe shape returned to the app. Kept in sync with the app's
+// `src/types/recipe.ts` (image is a remote URL string on the wire).
 export type Recipe = {
   id: string;
   title: string;
@@ -8,8 +10,4 @@ export type Recipe = {
   servings: number;
   ingredients: string[];
   instructions: string[];
-};
-
-export type SavedRecipe = Recipe & {
-  savedAt: string;
 };

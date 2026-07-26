@@ -1,0 +1,21 @@
+{
+  "name": "cookjar-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serverless backend for CookJar: proxies and normalizes the Spoonacular recipe API.",
+  "scripts": {
+    "dev": "vercel dev",
+    "dev:local": "tsx dev-server.ts",
+    "deploy": "vercel deploy --prod",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vercel/node": "^5.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.1",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
