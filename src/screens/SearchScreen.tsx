@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
@@ -17,7 +18,7 @@ import { RecipeCard } from '../components/RecipeCard';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { useVoiceSearch } from '../hooks/useVoiceSearch';
 import { SearchStackParamList } from '../navigation/types';
-import { colors, spacing } from '../theme/theme';
+import { colors, radius, spacing } from '../theme/theme';
 
 type Props = NativeStackScreenProps<SearchStackParamList, 'SearchList'>;
 
@@ -43,7 +44,10 @@ export function SearchScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <Text style={styles.header}>Find a recipe</Text>
+      <Text style={styles.header} numberOfLines={1} adjustsFontSizeToFit>
+        <Text style={styles.headerLead}>Ready to cook? </Text>
+        Find a recipe
+      </Text>
       <View style={styles.searchRow}>
         <TextInput
           style={styles.input}
@@ -115,9 +119,13 @@ function MicButton({ status, onPress }: { status: string; onPress: () => void })
       {transcribing ? (
         <ActivityIndicator color="#FFFFFF" size="small" />
       ) : (
-        <Animated.Text style={[styles.micIcon, { transform: [{ scale: pulse }] }]}>
-          {recording ? '⏹' : '🎤'}
-        </Animated.Text>
+        <Animated.View style={{ transform: [{ scale: pulse }] }}>
+          <Ionicons
+            name={recording ? 'stop' : 'mic'}
+            size={22}
+            color={recording ? colors.text : '#FFFFFF'}
+          />
+        </Animated.View>
       )}
     </Pressable>
   );
@@ -178,11 +186,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   header: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '800',
+    letterSpacing: -0.6,
     color: colors.headerText,
-    marginTop: spacing.sm,
-    marginBottom: spacing.md,
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  headerLead: {
+    fontWeight: '400',
+    color: colors.headerText,
   },
   searchRow: {
     flexDirection: 'row',
@@ -195,25 +208,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 12,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 15,
     fontSize: 16,
     color: colors.text,
   },
   mic: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   micActive: {
     backgroundColor: colors.accent,
-  },
-  micIcon: {
-    fontSize: 20,
   },
   voiceError: {
     color: colors.primary,
@@ -244,9 +254,9 @@ const styles = StyleSheet.create({
   retry: {
     marginTop: spacing.sm,
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: spacing.lg,
+    borderRadius: radius.pill,
+    paddingVertical: 12,
+    paddingHorizontal: spacing.xl,
   },
   retryText: {
     color: '#FFFFFF',

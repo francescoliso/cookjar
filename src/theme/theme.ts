@@ -1,16 +1,19 @@
 export const colors = {
-  background: '#211A17',
-  surface: '#2E2420',
-  border: '#3D302A',
-  text: '#F5EDE4',
+  background: '#E9F1EC',
+  surface: '#FDFCF8',
+  border: '#E3E8DF',
+  text: '#0E1B15',
   // Title/text that sits directly on `background` (screen headers).
-  headerText: '#F5EDE4',
-  textMuted: '#A99A88',
-  primary: '#E8905A',
-  primarySoft: 'rgba(232,144,90,0.20)',
-  accent: '#7FB08A',
-  // Warm translucent overlay laid over photos to mute their vividness.
-  scrim: 'rgba(33, 26, 23, 0.30)',
+  headerText: '#0E1B15',
+  textMuted: '#5F6B63',
+  // Deep forest green — used for filled pill buttons and active states.
+  primary: '#12241B',
+  // Pale mint — used for soft pill backgrounds.
+  primarySoft: '#DCEBDF',
+  // Lime — bright accent for highlights and "active" toggles.
+  accent: '#A7E36A',
+  // Light translucent overlay laid over photos to soften/mute them.
+  scrim: 'rgba(240, 244, 238, 0.42)',
 };
 
 export const spacing = {
@@ -22,8 +25,19 @@ export const spacing = {
 };
 
 export const radius = {
-  sm: 8,
-  md: 14,
-  lg: 20,
+  sm: 10,
+  md: 16,
+  lg: 22,
   pill: 999,
+};
+
+// Soft elevation for cards and floating elements.
+export const shadow = {
+  card: {
+    shadowColor: '#1B3226',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 3,
+  },
 };

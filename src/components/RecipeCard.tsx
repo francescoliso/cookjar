@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius, spacing } from '../theme/theme';
+import { colors, radius, shadow, spacing } from '../theme/theme';
 import { Recipe } from '../types/recipe';
 
 export function recipeMeta(recipe: Recipe): string {
@@ -23,7 +23,7 @@ export function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () =>
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View style={[styles.cardWrap, { transform: [{ scale }] }]}>
       <Pressable
         style={styles.card}
         onPress={onPress}
@@ -54,21 +54,24 @@ export function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () =>
 }
 
 const styles = StyleSheet.create({
+  cardWrap: {
+    marginBottom: spacing.md,
+    ...shadow.card,
+  },
   card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
-    marginBottom: spacing.md,
   },
   imageWrap: {
     width: '100%',
-    height: 140,
+    height: 150,
   },
   image: {
     width: '100%',
-    height: 140,
+    height: 150,
     backgroundColor: colors.primarySoft,
   },
   placeholder: {
@@ -92,8 +95,9 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: -0.4,
     color: colors.text,
   },
   meta: {

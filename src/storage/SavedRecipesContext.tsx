@@ -2,7 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Recipe, SavedRecipe } from '../types/recipe';
 
-const STORAGE_KEY = 'cookjar.savedRecipes';
+// Bumped to v2 when recipe images moved from bundled assets to remote URLs;
+// old entries stored stale image references, so they are dropped on upgrade.
+const STORAGE_KEY = 'cookjar.savedRecipes.v2';
 
 type SavedRecipesContextValue = {
   savedRecipes: SavedRecipe[];

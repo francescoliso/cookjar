@@ -175,7 +175,10 @@ export function RecipeDetailScreen() {
 
         {recipe.sourceUrl ? (
           <Pressable style={styles.sourceButton} onPress={openSource}>
-            <Text style={styles.sourceButtonText}>View full recipe →</Text>
+            <Text style={styles.sourceButtonText}>View full recipe</Text>
+            <View style={styles.sourceButtonDot}>
+              <Text style={styles.sourceButtonArrow}>→</Text>
+            </View>
           </Pressable>
         ) : null}
       </View>
@@ -206,9 +209,9 @@ const styles = StyleSheet.create({
   retry: {
     marginTop: spacing.md,
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: spacing.lg,
+    borderRadius: radius.pill,
+    paddingVertical: 12,
+    paddingHorizontal: spacing.xl,
   },
   retryText: {
     color: '#FFFFFF',
@@ -244,8 +247,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '700',
+    fontSize: 30,
+    fontWeight: '800',
+    letterSpacing: -0.8,
+    lineHeight: 34,
     color: colors.text,
   },
   source: {
@@ -276,8 +281,8 @@ const styles = StyleSheet.create({
   savePill: {
     backgroundColor: colors.primary,
     borderRadius: radius.pill,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 7,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 8,
   },
   savePillActive: {
     backgroundColor: colors.accent,
@@ -288,7 +293,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   savePillTextActive: {
-    color: '#FFFFFF',
+    color: colors.text,
   },
   sectionTitle: {
     fontSize: 20,
@@ -343,15 +348,30 @@ const styles = StyleSheet.create({
   },
   sourceButton: {
     marginTop: spacing.xl,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: radius.md,
-    paddingVertical: 13,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
+    paddingVertical: 15,
   },
   sourceButtonText: {
-    color: colors.primary,
+    color: '#FFFFFF',
     fontWeight: '700',
+    fontSize: 16,
+  },
+  sourceButtonDot: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sourceButtonArrow: {
+    color: colors.text,
     fontSize: 15,
+    fontWeight: '700',
   },
 });

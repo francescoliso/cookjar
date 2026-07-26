@@ -17,7 +17,7 @@ const SavedStack = createNativeStackNavigator<SavedStackParamList>();
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
-  headerStyle: { backgroundColor: colors.surface },
+  headerStyle: { backgroundColor: colors.background },
   headerTintColor: colors.text,
   headerShadowVisible: false,
   headerTitle: '',
@@ -77,7 +77,12 @@ export default function App() {
               headerShown: false,
               tabBarActiveTintColor: colors.primary,
               tabBarInactiveTintColor: colors.textMuted,
-              tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+              tabBarLabelStyle: { fontWeight: '600' },
+              tabBarStyle: {
+                backgroundColor: colors.surface,
+                borderTopColor: colors.border,
+                borderTopWidth: 1,
+              },
             }}
           >
             <Tab.Screen
@@ -92,7 +97,7 @@ export default function App() {
             />
             </Tab.Navigator>
           </NavigationContainer>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
         </SavedRecipesProvider>
       </QueryClientProvider>
     </SafeAreaProvider>

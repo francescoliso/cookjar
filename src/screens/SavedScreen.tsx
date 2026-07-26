@@ -41,11 +41,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   header: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '800',
+    letterSpacing: -0.6,
     color: colors.headerText,
-    marginTop: spacing.sm,
-    marginBottom: spacing.md,
+    marginTop: spacing.xl,
+    marginBottom: spacing.lg,
   },
   listContent: {
     paddingBottom: spacing.xl,
