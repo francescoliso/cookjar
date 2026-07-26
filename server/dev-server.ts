@@ -5,6 +5,7 @@ import http from 'node:http';
 import { URL } from 'node:url';
 import searchHandler from './api/search';
 import recipeHandler from './api/recipe';
+import transcribeHandler from './api/transcribe';
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
@@ -29,6 +30,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (url.pathname === '/api/search') return await searchHandler(req as any, ares);
     if (url.pathname === '/api/recipe') return await recipeHandler(req as any, ares);
+    if (url.pathname === '/api/transcribe') return await transcribeHandler(req as any, ares);
     res.statusCode = 404;
     res.end(JSON.stringify({ error: 'Not found' }));
   } catch (err) {

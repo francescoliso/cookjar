@@ -9,10 +9,13 @@ app's `Recipe` shape.
 
 - `GET /api/search?q=<query>&number=<1-30>` → `{ recipes: Recipe[] }`
 - `GET /api/recipe?id=<id>` → `{ recipe: Recipe }`
+- `POST /api/transcribe` (raw audio body, `Content-Type: audio/m4a`) →
+  `{ text }` — voice search transcription via ElevenLabs.
 
-If `SPOONACULAR_API_KEY` is **not** set, the backend serves built-in fixture
-recipes (see `lib/fixtures.ts`) so the app works end-to-end in local dev without
-a key.
+If `SPOONACULAR_API_KEY` is **not** set, recipe endpoints serve built-in fixtures
+(see `lib/fixtures.ts`). If `ELEVENLABS_API_KEY` is **not** set, `/api/transcribe`
+returns a canned transcript — so the app works end-to-end in local dev with no
+keys.
 
 ## Local development
 
@@ -40,10 +43,11 @@ Then point the app at the deployment URL via `expo.extra.apiBaseUrl` in
 
 ## Environment
 
-| Variable               | Required | Notes                                             |
-| ---------------------- | -------- | ------------------------------------------------- |
-| `SPOONACULAR_API_KEY`  | no\*     | Free key from spoonacular.com. Unset → fixtures.  |
-| `ALLOWED_ORIGINS`      | no       | Comma-separated CORS allowlist. Defaults to `*`.  |
+| Variable               | Required | Notes                                                   |
+| ---------------------- | -------- | ------------------------------------------------------- |
+| `SPOONACULAR_API_KEY`  | no\*     | Free key from spoonacular.com. Unset → recipe fixtures. |
+| `ELEVENLABS_API_KEY`   | no\*     | Key from elevenlabs.io. Unset → canned transcript.      |
+| `ALLOWED_ORIGINS`      | no       | Comma-separated CORS allowlist. Defaults to `*`.        |
 
 \* Required for real data; optional for fixture-backed local dev.
 

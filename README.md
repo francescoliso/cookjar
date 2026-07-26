@@ -7,19 +7,24 @@ you've cooked so you can find them again.
 ## How it works
 
 The app talks to a small serverless backend (`server/`) that proxies and
-normalizes the [Spoonacular](https://spoonacular.com/food-api) recipe API. The
-API key lives only on the server — the app just knows the backend URL. If no key
-is configured, the backend serves built-in fixture recipes so everything works
-in local dev without a key.
+normalizes the [Spoonacular](https://spoonacular.com/food-api) recipe API and the
+[ElevenLabs](https://elevenlabs.io) Speech-to-Text API. The API keys live only on
+the server — the app just knows the backend URL. If no keys are configured, the
+backend serves built-in fixtures (recipes and a canned transcript) so everything
+works in local dev without keys.
 
 ```
-App (Expo) ──► Backend (Vercel Functions) ──► Spoonacular
+App (Expo) ──► Backend (Vercel Functions) ──► Spoonacular  (recipes)
+                                          └─► ElevenLabs  (voice → text)
 ```
 
 ## Features
 
 - **Search** — live recipe search by dish name or ingredient, with loading,
   empty, and error states.
+- **Voice search** — tap the mic and speak; audio is transcribed via
+  [ElevenLabs](https://elevenlabs.io) Speech-to-Text (on the backend) and drops
+  straight into the search box.
 - **Recipe detail** — image, ingredients, step-by-step instructions, prep time,
   servings, and a link to the original source.
 - **Saved recipes** — save any recipe; it persists locally (AsyncStorage) and is

@@ -221,13 +221,14 @@ export const fixtureRecipes: Recipe[] = [
 ];
 
 export function searchFixtures(query: string): Recipe[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return fixtureRecipes;
-  return fixtureRecipes.filter(
-    (r) =>
-      r.title.toLowerCase().includes(q) ||
-      r.ingredients.some((i) => i.toLowerCase().includes(q))
-  );
+  const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if (!tokens.length) return fixtureRecipes;
+  // Match a recipe if any query word appears in its title or ingredients, so a
+  // spoken phrase like "chicken curry" still surfaces chicken and curry dishes.
+  return fixtureRecipes.filter((r) => {
+    const haystack = (r.title + ' ' + r.ingredients.join(' ')).toLowerCase();
+    return tokens.some((t) => haystack.includes(t));
+  });
 }
 
 export function getFixture(id: string): Recipe | undefined {

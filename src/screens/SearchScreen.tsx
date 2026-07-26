@@ -1,8 +1,9 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   FlatList,
   Pressable,
   StyleSheet,
@@ -14,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { searchRecipes } from '../api/client';
 import { RecipeCard } from '../components/RecipeCard';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { useVoiceSearch } from '../hooks/useVoiceSearch';
 import { SearchStackParamList } from '../navigation/types';
 import { colors, spacing } from '../theme/theme';
 
@@ -22,6 +24,7 @@ type Props = NativeStackScreenProps<SearchStackParamList, 'SearchList'>;
 export function SearchScreen({ navigation }: Props) {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query.trim(), 450);
+  const voice = useVoiceSearch(setQuery);
 
   const {
     data: recipes = [],
@@ -41,16 +44,21 @@ export function SearchScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Text style={styles.header}>Find a recipe</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Search by dish or ingredient"
-        placeholderTextColor={colors.textMuted}
-        value={query}
-        onChangeText={setQuery}
-        autoCorrect={false}
-        returnKeyType="search"
-        clearButtonMode="while-editing"
-      />
+      <View style={styles.searchRow}>
+        <TextInput
+          style={styles.input}
+          placeholder={voice.status === 'recording' ? 'Listening…' : 'Search by dish or ingredient'}
+          placeholderTextColor={colors.textMuted}
+          value={query}
+          onChangeText={setQuery}
+          autoCorrect={false}
+          returnKeyType="search"
+          clearButtonMode="while-editing"
+          editable={voice.status === 'idle'}
+        />
+        <MicButton status={voice.status} onPress={voice.toggle} />
+      </View>
+      {voice.error ? <Text style={styles.voiceError}>{voice.error}</Text> : null}
       <FlatList
         data={recipes}
         keyExtractor={(item) => item.id}
@@ -74,6 +82,44 @@ export function SearchScreen({ navigation }: Props) {
         }
       />
     </SafeAreaView>
+  );
+}
+
+function MicButton({ status, onPress }: { status: string; onPress: () => void }) {
+  const pulse = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (status === 'recording') {
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulse, { toValue: 1.25, duration: 550, useNativeDriver: true }),
+          Animated.timing(pulse, { toValue: 1, duration: 550, useNativeDriver: true }),
+        ])
+      );
+      loop.start();
+      return () => loop.stop();
+    }
+    pulse.setValue(1);
+  }, [status, pulse]);
+
+  const recording = status === 'recording';
+  const transcribing = status === 'transcribing';
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={transcribing}
+      style={[styles.mic, recording && styles.micActive]}
+      hitSlop={8}
+    >
+      {transcribing ? (
+        <ActivityIndicator color="#FFFFFF" size="small" />
+      ) : (
+        <Animated.Text style={[styles.micIcon, { transform: [{ scale: pulse }] }]}>
+          {recording ? '⏹' : '🎤'}
+        </Animated.Text>
+      )}
+    </Pressable>
   );
 }
 
@@ -138,7 +184,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     marginBottom: spacing.md,
   },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
   input: {
+    flex: 1,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
@@ -147,7 +200,26 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     color: colors.text,
-    marginBottom: spacing.md,
+  },
+  mic: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  micActive: {
+    backgroundColor: colors.accent,
+  },
+  micIcon: {
+    fontSize: 20,
+  },
+  voiceError: {
+    color: colors.primary,
+    fontSize: 13,
+    marginTop: -spacing.sm,
+    marginBottom: spacing.sm,
   },
   listContent: {
     paddingBottom: spacing.xl,

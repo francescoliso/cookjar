@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import searchHandler from '../search';
 import recipeHandler from '../recipe';
+import transcribeHandler from '../transcribe';
 
 // Minimal VercelRequest/VercelResponse doubles for exercising the fixture path.
 function mockReq(query: Record<string, string>) {
@@ -74,5 +75,15 @@ describe('endpoints (fixture path, no API key)', () => {
     const res = mockRes();
     await recipeHandler(mockReq({}), res);
     expect(res.statusCode).toBe(400);
+  });
+
+  it('POST /api/transcribe returns a fixture transcript with no API key', async () => {
+    delete process.env.ELEVENLABS_API_KEY;
+    const req = { ...mockReq({}), method: 'POST' } as any;
+    const res = mockRes();
+    await transcribeHandler(req, res);
+    expect(res.statusCode).toBe(200);
+    expect(typeof res.body.text).toBe('string');
+    expect(res.body.text.length).toBeGreaterThan(0);
   });
 });
