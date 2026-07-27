@@ -29,6 +29,8 @@ export function RecipeCard({ recipe, onPress }: { recipe: Recipe; onPress: () =>
         onPress={onPress}
         onPressIn={() => animateTo(0.96)}
         onPressOut={() => animateTo(1)}
+        accessibilityRole="button"
+        accessibilityLabel={`${recipe.title}${recipeMeta(recipe) ? `, ${recipeMeta(recipe)}` : ''}`}
       >
         <View style={styles.imageWrap}>
           {recipe.image ? (

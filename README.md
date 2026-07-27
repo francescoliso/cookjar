@@ -26,7 +26,8 @@ App (Expo) ──► Backend (Vercel Functions) ──► Spoonacular  (recipes)
   [ElevenLabs](https://elevenlabs.io) Speech-to-Text (on the backend) and drops
   straight into the search box.
 - **Recipe detail** — image, ingredients, step-by-step instructions, prep time,
-  servings, and a link to the original source.
+  servings, and a link to the original source. Tap an ingredient to check it
+  off while you cook or shop.
 - **Saved recipes** — save any recipe; it persists locally (AsyncStorage) and is
   available offline.
 - **Considered design** — warm "moody dark" palette, an illustrated app icon,
@@ -65,5 +66,5 @@ Spoonacular key to `server/.env` and deploy the backend, then set
 ## Roadmap
 
 - Accounts + cloud sync of saved recipes.
-- Cooking features (servings scaler, ingredient check-off, cook mode).
+- Cooking features (servings scaler, cook mode).
 - Recipe notes/ratings and a "cooked" history.

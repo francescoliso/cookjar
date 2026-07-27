@@ -7,6 +7,7 @@ import {
   Animated,
   FlatList,
   Pressable,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -41,6 +42,7 @@ export function SearchScreen({ navigation }: Props) {
 
   const hasQuery = debouncedQuery.length > 0;
   const showSpinner = hasQuery && isFetching && recipes.length === 0;
+  const isRefreshing = hasQuery && isFetching && recipes.length > 0;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -65,6 +67,15 @@ export function SearchScreen({ navigation }: Props) {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              if (hasQuery) refetch();
+            }}
+            tintColor={colors.primary}
+          />
+        }
         renderItem={({ item }) => (
           <RecipeCard
             recipe={item}
@@ -112,6 +123,11 @@ function MicButton({ status, onPress }: { status: string; onPress: () => void })
       disabled={transcribing}
       style={[styles.mic, recording && styles.micActive]}
       hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={
+        recording ? 'Stop recording' : transcribing ? 'Transcribing…' : 'Start voice search'
+      }
+      accessibilityState={{ disabled: transcribing, selected: recording }}
     >
       {transcribing ? (
         <ActivityIndicator color="#FFFFFF" size="small" />
@@ -155,7 +171,12 @@ function ListState({
     return (
       <View style={styles.state}>
         <Text style={styles.stateText}>{errorMessage ?? 'Something went wrong.'}</Text>
-        <Pressable style={styles.retry} onPress={onRetry}>
+        <Pressable
+          style={styles.retry}
+          onPress={onRetry}
+          accessibilityRole="button"
+          accessibilityLabel="Try again"
+        >
           <Text style={styles.retryText}>Try again</Text>
         </Pressable>
       </View>

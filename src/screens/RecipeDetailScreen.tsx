@@ -1,7 +1,7 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -23,8 +23,24 @@ export function RecipeDetailScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<SearchStackParamList>>();
   const { isSaved, saveRecipe, removeRecipe, savedRecipes } = useSavedRecipes();
   const saveScale = useRef(new Animated.Value(1)).current;
+  const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(() => new Set());
 
   const recipeId = route.params.recipeId;
+
+  // Ingredient check-off is a per-visit "shopping list" aid, not saved state —
+  // reset it whenever the viewed recipe changes.
+  useEffect(() => {
+    setCheckedIngredients(new Set());
+  }, [recipeId]);
+
+  const toggleIngredient = (index: number) => {
+    setCheckedIngredients((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  };
   // A saved recipe is the offline source of truth; otherwise fetch by id.
   const savedCopy = savedRecipes.find((r) => r.id === recipeId);
   const {
@@ -58,7 +74,13 @@ export function RecipeDetailScreen() {
     navigation.setOptions({
       headerRight: () =>
         recipe ? (
-          <Pressable onPress={handleToggleSave} hitSlop={8}>
+          <Pressable
+            onPress={handleToggleSave}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityState={{ selected: saved }}
+            accessibilityLabel={saved ? 'Remove from saved recipes' : 'Save recipe'}
+          >
             <Animated.View
               style={[
                 styles.savePill,
@@ -89,7 +111,12 @@ export function RecipeDetailScreen() {
         <Text style={styles.notFound}>
           {error instanceof Error ? error.message : 'Could not load this recipe.'}
         </Text>
-        <Pressable style={styles.retry} onPress={() => refetch()}>
+        <Pressable
+          style={styles.retry}
+          onPress={() => refetch()}
+          accessibilityRole="button"
+          accessibilityLabel="Try again"
+        >
           <Text style={styles.retryText}>Try again</Text>
         </Pressable>
       </View>
@@ -124,7 +151,12 @@ export function RecipeDetailScreen() {
       </View>
       <View style={styles.body}>
         <Text style={styles.title}>{recipe.title}</Text>
-        <Pressable onPress={openSource} disabled={!recipe.sourceUrl}>
+        <Pressable
+          onPress={openSource}
+          disabled={!recipe.sourceUrl}
+          accessibilityRole={recipe.sourceUrl ? 'link' : undefined}
+          accessibilityLabel={recipe.sourceUrl ? `Open source: ${recipe.sourceName}` : undefined}
+        >
           <Text style={[styles.source, recipe.sourceUrl && styles.sourceLink]}>
             {recipe.sourceName}
           </Text>
@@ -148,12 +180,24 @@ export function RecipeDetailScreen() {
         {recipe.ingredients.length > 0 && (
           <>
             <Text style={styles.sectionTitle}>Ingredients</Text>
-            {recipe.ingredients.map((ingredient, index) => (
-              <View key={index} style={styles.listRow}>
-                <View style={styles.bullet} />
-                <Text style={styles.listText}>{ingredient}</Text>
-              </View>
-            ))}
+            {recipe.ingredients.map((ingredient, index) => {
+              const checked = checkedIngredients.has(index);
+              return (
+                <Pressable
+                  key={index}
+                  style={styles.listRow}
+                  onPress={() => toggleIngredient(index)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked }}
+                  accessibilityLabel={ingredient}
+                >
+                  <View style={[styles.bullet, checked && styles.bulletChecked]} />
+                  <Text style={[styles.listText, checked && styles.listTextChecked]}>
+                    {ingredient}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </>
         )}
 
@@ -174,7 +218,12 @@ export function RecipeDetailScreen() {
         )}
 
         {recipe.sourceUrl ? (
-          <Pressable style={styles.sourceButton} onPress={openSource}>
+          <Pressable
+            style={styles.sourceButton}
+            onPress={openSource}
+            accessibilityRole="link"
+            accessibilityLabel={`View full recipe on ${recipe.sourceName}`}
+          >
             <Text style={styles.sourceButtonText}>View full recipe</Text>
             <View style={styles.sourceButtonDot}>
               <Text style={styles.sourceButtonArrow}>→</Text>
@@ -314,6 +363,13 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: colors.primary,
     marginTop: 8,
+  },
+  bulletChecked: {
+    backgroundColor: colors.border,
+  },
+  listTextChecked: {
+    color: colors.textMuted,
+    textDecorationLine: 'line-through',
   },
   stepRow: {
     flexDirection: 'row',
